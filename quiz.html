@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POT308 Mock Test Part 1</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .question {
+      margin-bottom: 25px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+    }
+    .question p {
+      font-weight: bold;
+    }
+    label {
+      display: block;
+      margin: 8px 0;
+      cursor: pointer;
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      background: black;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background: #333;
+    }
+    .result {
+      text-align: center;
+      font-size: 22px;
+      margin-top: 20px;
+    }
+    .correct {
+      color: green;
+      font-weight: bold;
+    }
+    .wrong {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>POT308 Mock Test </h1>
+  <h2>255 Questions</h2>
+
+  <form id="quizForm"></form>
+
+  <button type="button" onclick="submitQuiz()">Submit Test</button>
+
+  <div id="result" class="result"></div>
+  <div id="review"></div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD-j2J5VypagWw6OKkBDym-CnIDfq-YyoM",
+  authDomain: "mock-test-1afaa.firebaseapp.com",
+  databaseURL: "https://mock-test-1afaa-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "mock-test-1afaa",
+  storageBucket: "mock-test-1afaa.firebasestorage.app",
+  messagingSenderId: "319196350921",
+  appId: "1:319196350921:web:7c7999646ca58553cdc018",
+  measurementId: "G-W28W69FM2S"
+};
+
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const questions = [
+{
+  question: "Which one of the following polymers occurs naturally?",
+  options: ["Bakelite", "Teflon", "Cellulose", "PVC"],
+  answer: "Cellulose"
+},
+{
+  question: "Example of second order transition.",
+  options: ["Tm", "Tg", "Tf", "Tc"],
+  answer: "Tg"
+},
+{
+  question: "Tg is decreased by the addition of.",
+  options: ["Fillers", "Plasticizers", "Lubricants", "Stabilizers"],
+  answer: "Plasticizers"
+},
+{
+  question: "The maximum voltage required to produce dielectric breakdown is called.",
+  options: ["Capacitance", "Dielectric constant", "Dielectric strength", "Power factor"],
+  answer: "Dielectric strength"
+},
+{
+  question: "The glass transition temperature (Tg) is measured by.",
+  options: ["SEM", "TGA", "DSC", "GPC"],
+  answer: "DSC"
+},
+{
+  question: "Polymer dissolution occurs when ΔHm.",
+  options: ["Large", "Positive", "Zero", "Negative"],
+  answer: "Zero"
+},
+{
+  question: "Solubility parameter is related to.",
+  options: ["Heat capacity", "CED", "Tg", "Density"],
+  answer: "CED"
+},
+{
+  question: "Chain end degradation gives.",
+  options: ["Oligomers", "Monomers", "Crosslinks", "Radicals"],
+  answer: "Monomers"
+},
+{
+  question: "Polymer analogue reaction.",
+  options: ["Formation of PVC", "Formation of PVA", "Vulcanization", "Crosslinking"],
+  answer: "Formation of PVA"
+},
+{
+  question: "Degradation by oxygen is prevented by using.",
+  options: ["Silica", "PBN", "Wax", "Sulphur"],
+  answer: "PBN"
+},
+{
+  question: "Example of an antiozonant.",
+  options: ["Sulphur", "Wax", "Silica", "TMTD"],
+  answer: "Wax"
+},
+{
+  question: "Polymer crystals show a range of melting points because.",
+  options: [
+    "Absence of intermolecular forces",
+    "Metastable non-equilibrium state",
+    "Perfect crystallinity",
+    "No thermal history"
+  ],
+  answer: "Metastable non-equilibrium state"
+},
+{
+  question: "When cooling rate increases during solidification, Tg.",
+  options: ["Decreases", "Increases", "Remains constant", "Becomes zero"],
+  answer: "Increases"
+},
+{
+  question: "Binary polymer blends of polypropylene and polyamide-6 are immiscible because of.",
+  options: [
+    "High entropy of mixing",
+    "Low entropy of mixing",
+    "High crystallinity",
+    "Low viscosity"
+  ],
+  answer: "Low entropy of mixing"
+},
+{
+  question: "Size order of polymer chains in solvents.",
+  options: [
+    "RG > RI > RP",
+    "RP > RI > RG",
+    "RI > RG > RP",
+    "RG < RI < RP"
+  ],
+  answer: "RG > RI > RP"
+},
+{
+  question: "Flexible PVC tubes become stiff after organic solvent passage because.",
+  options: [
+    "PVC crosslinks",
+    "Plasticizer is removed and Tg increases",
+    "Polymer melts",
+    "Lubricant increases"
+  ],
+  answer: "Plasticizer is removed and Tg increases"
+},
+{
+  question: "Which polymer has lowest density?",
+  options: ["PVC", "Nylon", "PP", "HDPE"],
+  answer: "PP"
+},
+{
+  question: "Which polymer is sensitive to moisture absorption?",
+  options: ["PE", "PVC", "PP", "Nylon"],
+  answer: "Nylon"
+},
+{
+  question: "Which polymer has ester linkage?",
+  options: ["PVC", "Nylon", "Terylene", "SBR"],
+  answer: "Terylene"
+},
+{
+  question: "Which is a biodegradable polymer?",
+  options: ["PVC", "PE", "Polylactic acid", "PP"],
+  answer: "Polylactic acid"
+},
+{
+  question: "Nylon-6 is made from.",
+  options: ["Caprolactam", "Ethylene", "Butadiene", "Isoprene"],
+  answer: "Caprolactam"
+},
+{
+  question: "Teflon is obtained by polymerisation of.",
+  options: [
+    "Monofluoroethene",
+    "Difluoroethene",
+    "Trifluoroethene",
+    "Tetrafluoroethene"
+  ],
+  answer: "Tetrafluoroethene"
+},
+{
+  question: "ABS is.",
+  options: ["Homopolymer", "Copolymer", "Thermoset", "Elastomer"],
+  answer: "Copolymer"
+},
+{
+  question: "Gas phase polymerisation is used for.",
+  options: ["PVC", "Polyethylene", "Nylon", "Polyester"],
+  answer: "Polyethylene"
+},
+{
+  question: "Monomers in Novolac resin.",
+  options: [
+    "Urea and formaldehyde",
+    "Phenol and formaldehyde",
+    "Melamine and urea",
+    "Styrene and butadiene"
+  ],
+  answer: "Phenol and formaldehyde"
+},
+{
+  question: "The monomers used in Nylon-66 are.",
+  options: [
+    "Caprolactam and adipic acid",
+    "Adipic acid and hexamethylene diamine",
+    "Styrene and butadiene",
+    "Ethylene glycol and terephthalic acid"
+  ],
+  answer: "Adipic acid and hexamethylene diamine"
+},
+{
+  question: "Polyethylene is.",
+  options: ["Copolymer", "Homopolymer", "Thermoset", "Network polymer"],
+  answer: "Homopolymer"
+},
+{
+  question: "LLDPE is copolymer of ethylene and.",
+  options: ["Butene", "Styrene", "Isoprene", "Vinyl chloride"],
+  answer: "Butene"
+},
+{
+  question: "Which is a fully fluorinated polymer?",
+  options: ["PVC", "Neoprene", "Teflon", "ABS"],
+  answer: "Teflon"
+},
+{
+  question: "Which is a thermosetting plastic?",
+  options: ["PVC", "PP", "Bakelite", "Nylon"],
+  answer: "Bakelite"
+},
+{
+  question: "Terylene is a.",
+  options: ["Polyamide", "Polyester", "Elastomer", "Thermoset"],
+  answer: "Polyester"
+},
+{
+  question: "Buna-S is a polymer of.",
+  options: [
+    "Butadiene and Styrene",
+    "Butadiene and Acrylonitrile",
+    "Isoprene only",
+    "Vinyl chloride"
+  ],
+  answer: "Butadiene and Styrene"
+},
+{
+  question: "Natural rubber is which type of polymer?",
+  options: ["Condensation", "Addition", "Inorganic", "Crosslinked"],
+  answer: "Addition"
+},
+{
+  question: "PVC is mainly used for manufacture of.",
+  options: ["Tyres", "Plastic pipes", "Foam", "Bulletproof jackets"],
+  answer: "Plastic pipes"
+},
+{
+  question: "Rubbers are polymers known for.",
+  options: [
+    "High crystallinity",
+    "Low intermolecular forces",
+    "High Tg",
+    "High density"
+  ],
+  answer: "Low intermolecular forces"
+},
+{
+  question: "The number of repeating units in a polymer is called.",
+  options: [
+    "Molecular weight",
+    "Degree of polymerization",
+    "Crosslink density",
+    "Viscosity"
+  ],
+  answer: "Degree of polymerization"
+},
+{
+  question: "A polymer made of identical monomer units is called.",
+  options: ["Copolymer", "Homopolymer", "Blend", "Elastomer"],
+  answer: "Homopolymer"
+},
+{
+  question: "Crosslinking makes rubber.",
+  options: [
+    "Soluble",
+    "Insoluble in organic solvents",
+    "Brittle",
+    "Liquid"
+  ],
+  answer: "Insoluble in organic solvents"
+},
+{
+  question: "Glass transition temperature refers to transition from.",
+  options: [
+    "Liquid to gas",
+    "Crystalline to liquid",
+    "Glassy to rubbery state",
+    "Rubbery to solid"
+  ],
+  answer: "Glassy to rubbery state"
+},
+{
+  question: "Why are plasticizers added with polymers?",
+  options: [
+    "Increase brittleness",
+    "Improve flexibility",
+    "Increase density",
+    "Reduce elasticity"
+  ],
+  answer: "Improve flexibility"
+},
+{
+  question: "What kind of additives prevent degradation during processing and storage?",
+  options: ["Fillers", "Stabilizers", "Plasticizers", "Lubricants"],
+  answer: "Stabilizers"
+},
+{
+  question: "Which stabilizer prevents UV degradation?",
+  options: ["Sulphur", "Phenyl salicylates", "Wax", "Carbon fiber"],
+  answer: "Phenyl salicylates"
+},
+{
+  question: "Carbon black functions as stabilizer against.",
+  options: ["Heat", "UV degradation", "Moisture", "Pressure"],
+  answer: "UV degradation"
+},
+{
+  question: "Carbon fiber is an example of.",
+  options: ["Lubricant", "Reinforcement", "Plasticizer", "Stabilizer"],
+  answer: "Reinforcement"
+},
+{
+  question: "Which additive is used in the least amount?",
+  options: ["Plasticizers", "Fillers", "Lubricants", "Stabilizers"],
+  answer: "Lubricants"
+},
+{
+  question: "Which property is enhanced by adding antimony oxychloride?",
+  options: ["Flexibility", "Flame retardancy", "Density", "Transparency"],
+  answer: "Flame retardancy"
+},
+{
+  question: "Which compounds are used as antistatic agents?",
+  options: [
+    "Sulphur compounds",
+    "Ammonium compounds",
+    "Silicates",
+    "Carbonates"
+  ],
+  answer: "Ammonium compounds"
+},
+{
+  question: "Which is used as chemical blowing agent in polymers?",
+  options: ["Sulphur", "Azonitriles", "Wax", "PBN"],
+  answer: "Azonitriles"
+},
+{
+  question: "Which additive can act as curing agent for epoxides?",
+  options: ["Wax", "Amines", "Carbon black", "Silica"],
+  answer: "Amines"
+},
+{
+  question: "Compounding is essential for processing of.",
+  options: ["PE", "PVC", "PP", "ABS"],
+  answer: "PVC"
+},
+{
+  question: "Which type of fillers are chemically treated to improve attachment with polymers?",
+  options: ["Particulate fillers", "Mineral fillers", "Fibrous fillers", "Rubbery fillers"],
+  answer: "Mineral fillers"
+},
+{
+  question: "Carbon black is used as.",
+  options: [
+    "Plasticizer only",
+    "Filler, colourant and stabilizer",
+    "Lubricant only",
+    "Catalyst"
+  ],
+  answer: "Filler, colourant and stabilizer"
+},
+{
+  question: "Which filler is used as reinforcing agent?",
+  options: ["Wood flour", "Carbon black", "Silica flour", "Wax"],
+  answer: "Carbon black"
+},
+{
+  question: "Mica filler improves.",
+  options: ["Flexibility", "Heat resistance", "Transparency", "Elasticity"],
+  answer: "Heat resistance"
+},
+{
+  question: "Fillers percentage may be up to.",
+  options: ["10%", "25%", "50%", "75%"],
+  answer: "50%"
+},
+{
+  question: "Which polymer additive is used to remove parts from molds?",
+  options: ["Stabilizers", "Plasticizers", "Lubricants", "Fillers"],
+  answer: "Lubricants"
+},
+{
+  question: "Banbury mixer is used for.",
+  options: ["Injection moulding", "Rubber compounding", "Extrusion", "Calendaring"],
+  answer: "Rubber compounding"
+},
+{
+  question: "Open mill friction ratio for NR compounding.",
+  options: ["1:1", "1:1.25", "1:2", "1:5"],
+  answer: "1:1.25"
+},
+{
+  question: "The monomer of natural rubber is.",
+  options: ["Butadiene", "Styrene", "Isoprene", "Chloroprene"],
+  answer: "Isoprene"
+},
+{
+  question: "Natural rubber is chemically.",
+  options: [
+    "Trans-polyisoprene",
+    "Cis-1,4 polyisoprene",
+    "Polybutadiene",
+    "Polychloroprene"
+  ],
+  answer: "Cis-1,4 polyisoprene"
+},
+{
+  question: "Cis-polyisoprene is present in.",
+  options: ["Gutta percha", "Hevea rubber", "PVC", "Bakelite"],
+  answer: "Hevea rubber"
+},
+{
+  question: "The elasticity of rubber is due to its.",
+  options: ["Linear chains", "Helical structure", "Crosslinked crystals", "Rigid segments"],
+  answer: "Helical structure"
+},
+{
+  question: "BUNA-S is otherwise called.",
+  options: [
+    "Nitrile rubber",
+    "Styrene Butadiene Rubber",
+    "Butyl rubber",
+    "Neoprene"
+  ],
+  answer: "Styrene Butadiene Rubber"
+},
+{
+  question: "BUNA-N is a copolymer of.",
+  options: [
+    "Butadiene and Styrene",
+    "Butadiene and Acrylonitrile",
+    "Isoprene and Styrene",
+    "Ethylene and Propylene"
+  ],
+  answer: "Butadiene and Acrylonitrile"
+},
+{
+  question: "BUNA-N can be vulcanized by.",
+  options: ["Wax", "Sulphur", "PBN", "Silica"],
+  answer: "Sulphur"
+},
+{
+  question: "Neoprene is chemically known as.",
+  options: ["Polybutadiene", "Polychloroprene", "Polyisoprene", "Polyethylene"],
+  answer: "Polychloroprene"
+},
+{
+  question: "For vulcanisation of chloroprene rubber, curing agent used is.",
+  options: ["Sulphur", "Metal oxide", "Wax", "Plasticizer"],
+  answer: "Metal oxide"
+},
+{
+  question: "Butyl rubber is a copolymer of.",
+  options: [
+    "Isobutylene and Isoprene",
+    "Butadiene and Styrene",
+    "Isoprene only",
+    "Ethylene and Propylene"
+  ],
+  answer: "Isobutylene and Isoprene"
+},
+{
+  question: "Butyl rubber shows.",
+  options: [
+    "High density",
+    "Low gas permeability",
+    "High brittleness",
+    "High moisture absorption"
+  ],
+  answer: "Low gas permeability"
+},
+{
+  question: "Tubeless tyres are made of.",
+  options: ["PVC", "Butyl rubber", "BUNA-N", "Silicone"],
+  answer: "Butyl rubber"
+},
+{
+  question: "Rubber becomes useful only after.",
+  options: ["Cooling", "Vulcanization", "Heating", "Mastication"],
+  answer: "Vulcanization"
+},
+{
+  question: "Vulcanization improves.",
+  options: [
+    "Density only",
+    "Strength, elasticity and durability",
+    "Colour only",
+    "Transparency"
+  ],
+  answer: "Strength, elasticity and durability"
+},
+{
+  question: "Scorching of rubber compounds occurs due to.",
+  options: [
+    "Low temperature",
+    "Excessive processing temperature",
+    "Insufficient mixing",
+    "Low sulphur"
+  ],
+  answer: "Excessive processing temperature"
+},
+{
+  question: "Mastication of rubber is done for improving.",
+  options: ["Hardness", "Plasticity", "Density", "Crosslinking"],
+  answer: "Plasticity"
+},
+{
+  question: "Rubber compounding mixer used is.",
+  options: ["Two-roll mill", "Banbury internal mixer", "Extruder", "Calender"],
+  answer: "Banbury internal mixer"
+},
+{
+  question: "The most widely used preservative for NR latex is.",
+  options: ["Acetic acid", "Formic acid", "Ammonia", "Sulphur"],
+  answer: "Ammonia"
+},
+{
+  question: "pH of ammonia preserved latex is.",
+  options: ["7", "4", "10.5", "2"],
+  answer: "10.5"
+},
+{
+  question: "Mechanical stability is high for.",
+  options: [
+    "Field latex",
+    "Fresh latex",
+    "Ammonia preserved latex",
+    "Dry latex"
+  ],
+  answer: "Ammonia preserved latex"
+},
+{
+  question: "Dry coagulant used in latex glove manufacture.",
+  options: ["Sulphur", "Calcium chloride", "Wax", "Silica"],
+  answer: "Calcium chloride"
+},
+{
+  question: "Thickness of deposit depends on dwell time in.",
+  options: [
+    "Straight dipping",
+    "Coagulant dipping",
+    "Compression moulding",
+    "Extrusion"
+  ],
+  answer: "Coagulant dipping"
+},
+{
+  question: "Dunlop process is used for manufacture of.",
+  options: ["Gloves", "Foam rubber", "PVC pipes", "Tyres"],
+  answer: "Foam rubber"
+},
+{
+  question: "Markham still apparatus is used for determination of.",
+  options: ["MST", "DRC", "VFA", "Density"],
+  answer: "VFA"
+},
+{
+  question: "Latex glove manufacture commonly uses.",
+  options: ["Injection moulding", "Coagulant dipping", "Compression moulding", "Calendaring"],
+  answer: "Coagulant dipping"
+},
+{
+  question: "Deposit thickness in dipping process depends on.",
+  options: ["Pressure", "Temperature only", "Dwell time", "Molecular weight"],
+  answer: "Dwell time"
+},
+{
+  question: "Straight dipping is used for.",
+  options: ["Tyres", "Thin latex products", "Pipes", "Foam"],
+  answer: "Thin latex products"
+},
+{
+  question: "Carpet backing is produced by.",
+  options: ["Extrusion", "Spreading process", "Blow moulding", "Compression moulding"],
+  answer: "Spreading process"
+},
+{
+  question: "Latex thread is manufactured by.",
+  options: ["Injection moulding", "Extrusion / Gelling", "Calendaring", "Rotational moulding"],
+  answer: "Extrusion / Gelling"
+},
+{
+  question: "VFA number indicates.",
+  options: [
+    "Polymer density",
+    "Degree of latex degradation",
+    "Tg",
+    "Crosslink density"
+  ],
+  answer: "Degree of latex degradation"
+},
+{
+  question: "Latex preservation mainly prevents.",
+  options: [
+    "Crosslinking",
+    "Bacterial degradation",
+    "Vulcanization",
+    "Plasticization"
+  ],
+  answer: "Bacterial degradation"
+},
+{
+  question: "A plastic bucket is manufactured by.",
+  options: ["Compression moulding", "Injection moulding", "Extrusion", "Blow moulding"],
+  answer: "Injection moulding"
+},
+{
+  question: "Bottles from thermoplastic materials are made by.",
+  options: ["Compression moulding", "Injection moulding", "Extrusion", "Blow moulding"],
+  answer: "Blow moulding"
+},
+{
+  question: "Garden hose is manufactured by.",
+  options: ["Injection moulding", "Blow moulding", "Extrusion", "Compression moulding"],
+  answer: "Extrusion"
+},
+{
+  question: "Thin sheets are produced by squeezing thermoplastic material between revolving cylinders in.",
+  options: ["Injection moulding", "Compression moulding", "Calendaring", "Rotational moulding"],
+  answer: "Calendaring"
+},
+{
+  question: "Compression moulding is applicable to.",
+  options: ["Thermoplastics only", "Thermosetting resins", "Elastomers only", "Fibres"],
+  answer: "Thermosetting resins"
+},
+{
+  question: "Rotational moulding is commonly used for manufacture of.",
+  options: ["Buckets", "Water tanks", "Pipes", "Films"],
+  answer: "Water tanks"
+},
+{
+  question: "Thermoforming is used for manufacture of.",
+  options: ["Tyres", "Plastic egg containers", "Rubber gloves", "Foam"],
+  answer: "Plastic egg containers"
+},
+{
+  question: "Plastic chair is commonly produced by.",
+  options: ["Extrusion", "Injection moulding", "Blow moulding", "Compression moulding"],
+  answer: "Injection moulding"
+},
+{
+  question: "Injection moulding is preferred for.",
+  options: [
+    "Low-volume simple products",
+    "High-volume complex products",
+    "Latex gloves",
+    "Foam rubber"
+  ],
+  answer: "High-volume complex products"
+},
+{
+  question: "Injection moulding is mainly used for.",
+  options: ["Thermosets", "Thermoplastics", "Rubbers only", "Latex only"],
+  answer: "Thermoplastics"
+},
+{
+  question: "Cable insulation is commonly produced by.",
+  options: ["Compression moulding", "Extrusion", "Blow moulding", "Calendaring"],
+  answer: "Extrusion"
+},
+{
+  question: "Main zones of extruder screw are.",
+  options: [
+    "Heating, Cooling, Finishing",
+    "Feed, Transition, Metering",
+    "Injection, Compression, Ejection",
+    "Mixing, Vulcanizing, Finishing"
+  ],
+  answer: "Feed, Transition, Metering"
+},
+{
+  question: "Extrusion is used for continuous production of.",
+  options: [
+    "Bottles only",
+    "Pipes, hoses, sheets",
+    "Foam products",
+    "Tyres"
+  ],
+  answer: "Pipes, hoses, sheets"
+},
+{
+  question: "Calendaring is used to manufacture.",
+  options: ["Tyres", "Thin sheets and films", "Gloves", "Foam"],
+  answer: "Thin sheets and films"
+},
+{
+  question: "Roll crowning is used in.",
+  options: ["Injection moulding", "Calendaring", "Extrusion", "Dipping"],
+  answer: "Calendaring"
+},
+{
+  question: "Compression moulding has simple.",
+  options: ["Extruder screw", "Mold design", "Latex preservation", "Crosslink density"],
+  answer: "Mold design"
+},
+{
+  question: "Compression moulding is not ideal for.",
+  options: ["Thermosets", "Intricate shapes", "Simple shapes", "Molded products"],
+  answer: "Intricate shapes"
+},
+{
+  question: "Thermoforming is suitable for.",
+  options: ["Solid rods", "Sheet products", "Tyres", "Foam rubber"],
+  answer: "Sheet products"
+},
+{
+  question: "Two-roll mill is used for.",
+  options: ["Foam production", "Mastication and mixing", "Bottle production", "Latex preservation"],
+  answer: "Mastication and mixing"
+},
+{
+  question: "PVC is mainly used for.",
+  options: ["Tyres", "Pipes and cable insulation", "Foam", "Optical glass"],
+  answer: "Pipes and cable insulation"
+},
+{
+  question: "PP has.",
+  options: [
+    "Highest density",
+    "Lowest density among common plastics",
+    "Highest moisture absorption",
+    "Lowest strength"
+  ],
+  answer: "Lowest density among common plastics"
+},
+{
+  question: "Bakelite is.",
+  options: ["Thermoplastic", "Thermosetting plastic", "Elastomer", "Foam"],
+  answer: "Thermosetting plastic"
+},
+{
+  question: "Which additive improves flexibility?",
+  options: ["Lubricant", "Plasticizer", "Stabilizer", "Filler"],
+  answer: "Plasticizer"
+},
+{
+  question: "Which additive prevents degradation?",
+  options: ["Plasticizer", "Stabilizer", "Lubricant", "Blowing agent"],
+  answer: "Stabilizer"
+},
+{
+  question: "Which filler acts as reinforcement?",
+  options: ["Wax", "Carbon black", "Plasticizer", "PBN"],
+  answer: "Carbon black"
+},
+{
+  question: "Wood flour and silica flour are examples of.",
+  options: ["Plasticizers", "Fillers", "Lubricants", "Catalysts"],
+  answer: "Fillers"
+},
+{
+  question: "Purpose of antistatic agents.",
+  options: [
+    "Improve elasticity",
+    "Prevent static charge buildup",
+    "Increase density",
+    "Enhance flame resistance"
+  ],
+  answer: "Prevent static charge buildup"
+},
+{
+  question: "Sodium bicarbonate acts as.",
+  options: ["Plasticizer", "Blowing agent", "Lubricant", "Filler"],
+  answer: "Blowing agent"
+},
+{
+  question: "Sulphur acts as curing agent for.",
+  options: ["Thermoplastics", "Diene rubbers", "Polyesters", "PVC"],
+  answer: "Diene rubbers"
+},
+{
+  question: "Crosslinking agents improve.",
+  options: [
+    "Transparency",
+    "Strength and elasticity",
+    "Moisture absorption",
+    "Density only"
+  ],
+  answer: "Strength and elasticity"
+},
+{
+  question: "Polymeric flow promoters improve.",
+  options: [
+    "Thermal degradation",
+    "Flow during processing",
+    "Crosslinking",
+    "Moisture absorption"
+  ],
+  answer: "Flow during processing"
+},
+{
+  question: "Isoprene in natural rubber exists in how many geometrical isomeric forms?",
+  options: ["1", "2", "3", "4"],
+  answer: "2"
+},
+{
+  question: "These polymers consist of coil-like polymer chains.",
+  options: ["Thermosets", "Elastomers", "Fibres", "Composites"],
+  answer: "Elastomers"
+},
+{
+  question: "Tyre tubes are made from.",
+  options: ["PVC", "Butyl rubber", "Nylon", "Polycarbonate"],
+  answer: "Butyl rubber"
+},
+{
+  question: "Which synthetic rubbers are blended with BR for tyre applications?",
+  options: [
+    "PVC and PE",
+    "NR and SBR",
+    "ABS and PP",
+    "Nylon and Teflon"
+  ],
+  answer: "NR and SBR"
+},
+{
+  question: "Peptizers are added in rubber to.",
+  options: [
+    "Increase hardness",
+    "Reduce viscosity",
+    "Improve colour",
+    "Increase density"
+  ],
+  answer: "Reduce viscosity"
+},
+{
+  question: "Blooming on rubber surface occurs due to.",
+  options: [
+    "Polymerization",
+    "Migration of excess solid particles",
+    "Cooling",
+    "Crosslinking"
+  ],
+  answer: "Migration of excess solid particles"
+},
+{
+  question: "Butyl rubber is preferred for tubes because of.",
+  options: [
+    "High elasticity only",
+    "Excellent air impermeability",
+    "Low strength",
+    "High transparency"
+  ],
+  answer: "Excellent air impermeability"
+},
+{
+  question: "Sludge in latex is.",
+  options: [
+    "Carbon black",
+    "Magnesium ammonium phosphate",
+    "Sulphur",
+    "Silica"
+  ],
+  answer: "Magnesium ammonium phosphate"
+},
+{
+  question: "In natural rubber latex, particle size range is.",
+  options: [
+    "10–20 μm",
+    "0.02–3 μm",
+    "5–10 mm",
+    "100–200 nm"
+  ],
+  answer: "0.02–3 μm"
+},
+{
+  question: "Foam rubber is produced using.",
+  options: ["Calendaring", "Dunlop process", "Injection moulding", "Extrusion"],
+  answer: "Dunlop process"
+},
+{
+  question: "Latex gloves are produced by.",
+  options: ["Extrusion", "Dipping", "Compression moulding", "Calendaring"],
+  answer: "Dipping"
+},
+{
+  question: "VFA is determined using.",
+  options: ["DSC", "Markham still", "Banbury mixer", "Extruder"],
+  answer: "Markham still"
+},
+{
+  question: "Injection moulding types include.",
+  options: [
+    "Only piston",
+    "Plunger, piston, reciprocating screw",
+    "Only screw",
+    "Only plunger"
+  ],
+  answer: "Plunger, piston, reciprocating screw"
+},
+{
+  question: "Blow moulding is mainly used for.",
+  options: ["Sheets", "Hollow articles", "Foam", "Rubber mixing"],
+  answer: "Hollow articles"
+},
+{
+  question: "Polyaramid is commonly used for.",
+  options: ["PVC pipes", "Bulletproof jackets", "Latex gloves", "Buckets"],
+  answer: "Bulletproof jackets"
+},
+{
+  question: "Equal and opposite force on elastomer at higher temperature causes.",
+  options: [
+    "Expansion",
+    "Shrinkage along loading direction",
+    "Melting",
+    "Crosslinking"
+  ],
+  answer: "Shrinkage along loading direction"
+},
+{
+  question: "What is the primary purpose of mastication in rubber processing?",
+  options: [
+    "Increase crosslinking",
+    "Reduce molecular weight for easier processing",
+    "Increase hardness",
+    "Improve colour"
+  ],
+  answer: "Reduce molecular weight for easier processing"
+},
+{
+  question: "Which synthetic rubber is highly resistant to oil and fuel?",
+  options: ["Buna-S", "Butyl rubber", "Buna-N", "Natural rubber"],
+  answer: "Buna-N"
+},
+{
+  question: "Which polymer is commonly used for non-stick coatings?",
+  options: ["PVC", "PTFE", "ABS", "HDPE"],
+  answer: "PTFE"
+},
+{
+  question: "Which thermoplastic is widely used for milk bottles and containers?",
+  options: ["LDPE", "HDPE", "PVC", "Bakelite"],
+  answer: "HDPE"
+},
+{
+  question: "Which process is most suitable for making disposable cups from plastic sheets?",
+  options: ["Injection moulding", "Thermoforming", "Compression moulding", "Extrusion"],
+  answer: "Thermoforming"
+},
+{
+  question: "Which polymer has excellent optical clarity and impact resistance?",
+  options: ["Polycarbonate", "PVC", "Bakelite", "Natural rubber"],
+  answer: "Polycarbonate"
+},
+{
+  question: "Which additive improves processability by reducing friction during moulding?",
+  options: ["Plasticizer", "Stabilizer", "Lubricant", "Filler"],
+  answer: "Lubricant"
+},
+{
+  question: "Which polymerization method is commonly used for PVC production?",
+  options: ["Gas phase polymerisation", "Suspension polymerisation", "Bulk polymerisation", "Solution polymerisation"],
+  answer: "Suspension polymerisation"
+},
+{
+  question: "Which polymer is used in bulletproof vests due to very high strength?",
+  options: ["Polyethylene", "Kevlar", "PVC", "PTFE"],
+  answer: "Kevlar"
+},
+{
+  question: "Which type of polymerization forms Nylon-66?",
+  options: ["Addition polymerisation", "Condensation polymerisation", "Gas phase polymerisation", "Bulk polymerisation"],
+  answer: "Condensation polymerisation"
+},
+{
+  question: "Which polymer is known for high elasticity and resilience?",
+  options: ["Thermosets", "Elastomers", "Fibres", "Thermoplastics"],
+  answer: "Elastomers"
+},
+{
+  question: "What property does vulcanization mainly improve in rubber?",
+  options: [
+    "Transparency",
+    "Mechanical strength and elasticity",
+    "Colour",
+    "Density"
+  ],
+  answer: "Mechanical strength and elasticity"
+},
+{
+  question: "Which process is best suited for manufacturing long continuous plastic rods?",
+  options: ["Injection moulding", "Extrusion", "Blow moulding", "Compression moulding"],
+  answer: "Extrusion"
+},
+{
+  question: "Which polymer additive protects against thermal oxidation?",
+  options: ["Plasticizer", "Antioxidant", "Filler", "Lubricant"],
+  answer: "Antioxidant"
+},
+{
+  question: "Which synthetic rubber is also called polychloroprene?",
+  options: ["Buna-N", "Buna-S", "Neoprene", "Butyl rubber"],
+  answer: "Neoprene"
+},
+{
+  question: "Which property is increased by reinforcing fillers?",
+  options: ["Transparency", "Mechanical strength", "Moisture absorption", "Softness"],
+  answer: "Mechanical strength"
+},
+{
+  question: "Which thermosetting resin is commonly used in electrical switches?",
+  options: ["PVC", "Bakelite", "Polyethylene", "Nylon"],
+  answer: "Bakelite"
+},
+{
+  question: "Which processing method is used to manufacture large hollow plastic playground toys?",
+  options: ["Injection moulding", "Rotational moulding", "Compression moulding", "Calendaring"],
+  answer: "Rotational moulding"
+},
+{
+  question: "Which rubber property allows large reversible deformation?",
+  options: ["Crystallinity", "Entropy elasticity", "High Tg", "Crosslink density"],
+  answer: "Entropy elasticity"
+},
+{
+  question: "Which polymer is widely used in textile fibres?",
+  options: ["Terylene", "PVC", "PTFE", "Bakelite"],
+  answer: "Terylene"
+},
+{
+  question: "Which latex product is manufactured using coagulant dipping?",
+  options: ["Pipes", "Gloves", "Sheets", "Tyres"],
+  answer: "Gloves"
+},
+{
+  question: "Which additive helps polymers resist fire?",
+  options: ["Plasticizer", "Flame retardant", "Lubricant", "Antioxidant"],
+  answer: "Flame retardant"
+},
+{
+  question: "Which polymer is best known for chemical inertness?",
+  options: ["PVC", "PTFE", "ABS", "PP"],
+  answer: "PTFE"
+},
+{
+  question: "Which process is used to produce uniform thin plastic films?",
+  options: ["Compression moulding", "Calendaring", "Injection moulding", "Dipping"],
+  answer: "Calendaring"
+},
+{
+  question: "Which factor mainly affects latex deposit thickness?",
+  options: ["Density", "Dwell time", "Polymer colour", "Tg"],
+  answer: "Dwell time"
+},
+{
+  question: "Which polymer is commonly used in ropes due to high strength?",
+  options: ["Nylon", "PVC", "Bakelite", "Natural rubber"],
+  answer: "Nylon"
+},
+{
+  question: "Which additive improves flexibility in PVC?",
+  options: ["Fillers", "Plasticizers", "Lubricants", "Stabilizers"],
+  answer: "Plasticizers"
+},
+{
+  question: "Which synthetic rubber has superior weather resistance?",
+  options: ["Natural rubber", "Neoprene", "Buna-S", "Buna-N"],
+  answer: "Neoprene"
+},
+{
+  question: "Which machine is used for rubber mastication?",
+  options: ["Extruder", "Two-roll mill", "Blow moulder", "DSC"],
+  answer: "Two-roll mill"
+},
+{
+  question: "Which polymer is used for food-grade baby bottle nipples?",
+  options: ["PVC", "Silicone rubber", "Bakelite", "ABS"],
+  answer: "Silicone rubber"
+},
+{
+  question: "Which polymer processing method is commonly used for manufacturing PET bottles?",
+  options: ["Compression moulding", "Injection stretch blow moulding", "Calendaring", "Rotational moulding"],
+  answer: "Injection stretch blow moulding"
+},
+{
+  question: "Which thermoplastic is commonly used for transparent water bottles?",
+  options: ["PVC", "PET", "HDPE", "Bakelite"],
+  answer: "PET"
+},
+{
+  question: "Which filler is widely used to improve stiffness in plastics?",
+  options: ["Wax", "Calcium carbonate", "Plasticizer", "Lubricant"],
+  answer: "Calcium carbonate"
+},
+{
+  question: "Which additive prevents polymer degradation due to heat during processing?",
+  options: ["Blowing agent", "Heat stabilizer", "Lubricant", "Coagulant"],
+  answer: "Heat stabilizer"
+},
+{
+  question: "Which process is used to produce multilayer plastic films?",
+  options: ["Compression moulding", "Co-extrusion", "Rotational moulding", "Dipping"],
+  answer: "Co-extrusion"
+},
+{
+  question: "Which property of polymers is improved by annealing?",
+  options: ["Colour", "Dimensional stability", "Elasticity", "Solubility"],
+  answer: "Dimensional stability"
+},
+{
+  question: "Which rubber additive accelerates vulcanization?",
+  options: ["Plasticizer", "Accelerator", "Filler", "Lubricant"],
+  answer: "Accelerator"
+},
+{
+  question: "Which process is mainly used for manufacturing disposable syringes?",
+  options: ["Extrusion", "Injection moulding", "Blow moulding", "Compression moulding"],
+  answer: "Injection moulding"
+},
+{
+  question: "Which polymer is known for excellent abrasion resistance?",
+  options: ["PVC", "Polyurethane", "PTFE", "Bakelite"],
+  answer: "Polyurethane"
+},
+{
+  question: "Which synthetic fibre is known for wrinkle resistance?",
+  options: ["Cotton", "Terylene", "Natural rubber", "PVC"],
+  answer: "Terylene"
+},
+{
+  question: "Which test measures polymer flow behavior under load?",
+  options: ["MST", "MFI", "VFA", "DSC"],
+  answer: "MFI"
+},
+{
+  question: "Which polymer is commonly used for electrical insulation due to excellent dielectric strength?",
+  options: ["PVC", "PP", "Natural rubber", "Cellulose"],
+  answer: "PVC"
+},
+{
+  question: "Which polymer has the highest chemical resistance among common plastics?",
+  options: ["Nylon", "PVC", "PTFE", "ABS"],
+  answer: "PTFE"
+},
+{
+  question: "Which additive reduces brittleness in plastics?",
+  options: ["Filler", "Plasticizer", "Stabilizer", "Reinforcement"],
+  answer: "Plasticizer"
+},
+{
+  question: "Which process is used to make polymer sheets for packaging trays?",
+  options: ["Thermoforming", "Dipping", "Compression moulding", "Banbury mixing"],
+  answer: "Thermoforming"
+},
+{
+  question: "Which polymer is widely used in 3D printing filaments?",
+  options: ["PLA", "Bakelite", "Natural rubber", "Neoprene"],
+  answer: "PLA"
+},
+{
+  question: "Which property determines polymer resistance to scratching?",
+  options: ["Density", "Hardness", "Solubility", "Plasticity"],
+  answer: "Hardness"
+},
+{
+  question: "Which polymer is commonly used in medical implants because of biocompatibility?",
+  options: ["PVC", "Silicone", "Bakelite", "ABS"],
+  answer: "Silicone"
+},
+{
+  question: "Which process combines resin with reinforcing fibres to make composites?",
+  options: ["Extrusion", "Pultrusion", "Calendaring", "Dipping"],
+  answer: "Pultrusion"
+},
+{
+  question: "Which thermoplastic has excellent fatigue resistance and is used in living hinges?",
+  options: ["PVC", "PP", "Bakelite", "PTFE"],
+  answer: "PP"
+},
+{
+  question: "Which polymer is commonly used in car bumpers?",
+  options: ["Polypropylene", "Cellulose", "Natural rubber", "Bakelite"],
+  answer: "Polypropylene"
+},
+{
+  question: "Which process is ideal for manufacturing reinforced plastic pipes?",
+  options: ["Rotational moulding", "Filament winding", "Dipping", "Calendaring"],
+  answer: "Filament winding"
+},
+{
+  question: "Which additive helps disperse pigments uniformly in polymers?",
+  options: ["Dispersing agent", "Lubricant", "Accelerator", "Coagulant"],
+  answer: "Dispersing agent"
+},
+{
+  question: "Which polymer is preferred for food packaging films due to flexibility?",
+  options: ["LDPE", "Bakelite", "Nylon", "PTFE"],
+  answer: "LDPE"
+},
+{
+  question: "Which processing method is used for making FRP tanks?",
+  options: ["Injection moulding", "Hand lay-up", "Calendaring", "Dipping"],
+  answer: "Hand lay-up"
+},
+{
+  question: "Which property increases with crystallinity in polymers?",
+  options: ["Transparency", "Density", "Flexibility", "Solubility"],
+  answer: "Density"
+},
+{
+  question: "Which additive prevents discoloration during polymer processing?",
+  options: ["Colorant", "Stabilizer", "Plasticizer", "Filler"],
+  answer: "Stabilizer"
+},
+{
+  question: "Which polymer is commonly used for microwave-safe containers?",
+  options: ["PP", "PVC", "Bakelite", "Natural rubber"],
+  answer: "PP"
+},
+{
+  question: "Which thermoplastic is commonly used in greenhouse films?",
+  options: ["LDPE", "PTFE", "Bakelite", "Polycarbonate"],
+  answer: "LDPE"
+},
+{
+  question: "Which polymer is used in contact lenses?",
+  options: ["Hydrogel", "PVC", "Bakelite", "Polyethylene"],
+  answer: "Hydrogel"
+},
+{
+  question: "Which process is suitable for producing seamless hollow polymer balls?",
+  options: ["Injection moulding", "Rotational moulding", "Compression moulding", "Extrusion"],
+  answer: "Rotational moulding"
+},
+{
+  question: "Which additive improves UV resistance in outdoor plastics?",
+  options: ["UV stabilizer", "Plasticizer", "Coagulant", "Lubricant"],
+  answer: "UV stabilizer"
+},
+{
+  question: "Which polymer is commonly used for synthetic textile ropes?",
+  options: ["Nylon", "Bakelite", "PVC", "Cellulose"],
+  answer: "Nylon"
+},
+{
+  question: "Which process is used to manufacture laminated composite sheets?",
+  options: ["Compression moulding", "Lamination", "Dipping", "Extrusion"],
+  answer: "Lamination"
+},
+{
+  question: "Which polymer is widely used in automotive dashboards?",
+  options: ["ABS", "Natural rubber", "Cellulose", "PTFE"],
+  answer: "ABS"
+},
+{
+  question: "Which test evaluates rubber resistance to repeated flexing?",
+  options: ["Tensile test", "Flex fatigue test", "MFI", "DSC"],
+  answer: "Flex fatigue test"
+},
+{
+  question: "Which additive is used to produce cellular foam structures?",
+  options: ["Accelerator", "Blowing agent", "Plasticizer", "Filler"],
+  answer: "Blowing agent"
+},
+{
+  question: "Which polymer is used for safety helmets due to impact strength?",
+  options: ["Polycarbonate", "PVC", "Bakelite", "Natural rubber"],
+  answer: "Polycarbonate"
+},
+{
+  question: "Which polymer processing defect is caused by trapped air bubbles?",
+  options: ["Sink marks", "Voids", "Blooming", "Scorching"],
+  answer: "Voids"
+},
+{
+  question: "Which additive improves flame resistance by releasing water on heating?",
+  options: ["Aluminum hydroxide", "Wax", "PBN", "Plasticizer"],
+  answer: "Aluminum hydroxide"
+},
+{
+  question: "Which polymer is commonly used for biodegradable disposable cutlery?",
+  options: ["PVC", "PLA", "PTFE", "Bakelite"],
+  answer: "PLA"
+},
+{
+  question: "Which polymer property is most important for shock absorbers?",
+  options: ["Transparency", "Elasticity", "Density", "Crystallinity"],
+  answer: "Elasticity"
+},
+{
+  question: "Which processing method is commonly used for rubber shoe soles?",
+  options: ["Compression moulding", "Calendaring", "Dipping", "Rotational moulding"],
+  answer: "Compression moulding"
+},
+{
+  question: "Which additive is used to improve impact resistance in brittle plastics?",
+  options: ["Plasticizer", "Impact modifier", "Filler", "Accelerator"],
+  answer: "Impact modifier"
+},
+{
+  question: "Which polymer is commonly used in cable jacketing due to flexibility and insulation?",
+  options: ["PVC", "Bakelite", "Natural rubber", "Cellulose"],
+  answer: "PVC"
+},
+{
+  question: "Which synthetic polymer is widely used for bullet-resistant composites?",
+  options: ["Kevlar", "PP", "PVC", "LDPE"],
+  answer: "Kevlar"
+},
+{
+  question: "Which process is used to manufacture silicone sealants?",
+  options: ["Extrusion", "Chemical curing", "Blow moulding", "Calendaring"],
+  answer: "Chemical curing"
+},
+{
+  question: "Which test is used to determine thermal degradation of polymers?",
+  options: ["DSC", "TGA", "MFI", "VFA"],
+  answer: "TGA"
+},
+{
+  question: "Which thermoplastic is widely used for laboratory containers due to chemical resistance?",
+  options: ["PP", "PVC", "ABS", "Bakelite"],
+  answer: "PP"
+},
+{
+  question: "Which additive improves polymer transparency?",
+  options: ["Clarifying agent", "Filler", "Accelerator", "Plasticizer"],
+  answer: "Clarifying agent"
+},
+{
+  question: "Which process is commonly used to produce polymer foam insulation boards?",
+  options: ["Foaming extrusion", "Compression moulding", "Dipping", "Pultrusion"],
+  answer: "Foaming extrusion"
+},
+{
+  question: "Which polymer is commonly used for waterproof membranes?",
+  options: ["EPDM rubber", "Bakelite", "Cellulose", "PLA"],
+  answer: "EPDM rubber"
+},
+{
+  question: "Which elastomer is commonly used in automotive weather seals?",
+  options: ["EPDM", "PVC", "PTFE", "ABS"],
+  answer: "EPDM"
+},
+{
+  question: "Which polymer has superior transparency and weatherability for outdoor glazing?",
+  options: ["Acrylic (PMMA)", "PVC", "Bakelite", "Natural rubber"],
+  answer: "Acrylic (PMMA)"
+},
+{
+  question: "Which additive improves resistance to microbial growth in polymers?",
+  options: ["Antimicrobial agent", "Plasticizer", "Filler", "Lubricant"],
+  answer: "Antimicrobial agent"
+},
+{
+  question: "Which process is used for making reinforced thermoset laminates?",
+  options: ["Compression moulding", "Lay-up process", "Dipping", "Extrusion"],
+  answer: "Lay-up process"
+},
+{
+  question: "Which polymer is widely used in disposable gloves besides natural latex?",
+  options: ["Nitrile rubber", "Bakelite", "Polyethylene", "Polycarbonate"],
+  answer: "Nitrile rubber"
+},
+{
+  question: "Which property is improved by copolymerization?",
+  options: [
+    "Tailored mechanical and chemical properties",
+    "Only density",
+    "Only colour",
+    "Only crystallinity"
+  ],
+  answer: "Tailored mechanical and chemical properties"
+},
+{
+  question: "Which additive is used to improve scratch resistance in coatings?",
+  options: ["Hardener", "Plasticizer", "Filler", "Blowing agent"],
+  answer: "Hardener"
+},
+{
+  question: "Which polymer is used in flexible packaging cling films?",
+  options: ["LLDPE", "Bakelite", "PTFE", "Natural rubber"],
+  answer: "LLDPE"
+},
+{
+  question: "Which process is commonly used for making polymer optical fibers?",
+  options: ["Extrusion", "Blow moulding", "Calendaring", "Rotational moulding"],
+  answer: "Extrusion"
+},
+{
+  question: "Which additive prevents fogging in transparent films?",
+  options: ["Antifog agent", "Accelerator", "Coagulant", "Filler"],
+  answer: "Antifog agent"
+},
+{
+  question: "Which polymer is commonly used for reusable food storage containers?",
+  options: ["Polypropylene", "Bakelite", "Natural rubber", "Cellulose"],
+  answer: "Polypropylene"
+},
+{
+  question: "Which thermoplastic is preferred for impact-resistant luggage shells?",
+  options: ["Polycarbonate", "PVC", "PLA", "Bakelite"],
+  answer: "Polycarbonate"
+},
+{
+  question: "Which process is suitable for high-strength composite aerospace parts?",
+  options: ["Autoclave moulding", "Dipping", "Calendaring", "Blow moulding"],
+  answer: "Autoclave moulding"
+},
+{
+  question: "Rubber sheeting is made by.",
+  options: ["Extrusion", "Dipping", "Injection moulding", "Calendaring"],
+  answer: "Calendaring"
+},
+{
+  question: "PMMA sheet is manufactured by.",
+  options: [
+    "Bulk polymerization",
+    "Emulsion polymerization",
+    "Solution polymerization",
+    "Suspension polymerization"
+  ],
+  answer: "Bulk polymerization"
+},
+{
+  question: "Synthetic lattices are made by.",
+  options: [
+    "Emulsion polymerization",
+    "Suspension polymerization",
+    "Solution polymerization",
+    "Bulk polymerization"
+  ],
+  answer: "Emulsion polymerization"
+},
+{
+  question: "Iodine absorption number of carbon black measures.",
+  options: ["Colour", "Density", "Particle size", "Structure"],
+  answer: "Particle size"
+},
+{
+  question: "If accelerator is not used in a rubber compound after heating, it becomes.",
+  options: ["Undercure", "Will not cure", "Over cure", "Exact cure"],
+  answer: "Undercure"
+},
+{
+  question: "Wearing part of tyre is.",
+  options: ["Sidewall", "Tread", "Bead", "Belt"],
+  answer: "Tread"
+},
+{
+  question: "Nitrile rubber is mainly known for.",
+  options: [
+    "Heat resistance",
+    "Chemical resistance",
+    "Aging resistance",
+    "Oil resistance"
+  ],
+  answer: "Oil resistance"
+},
+{
+  question: "Which resin is used for FRP manufacture?",
+  options: [
+    "PVC",
+    "Unsaturated polyester resin",
+    "Saturated polyester resin",
+    "None"
+  ],
+  answer: "Unsaturated polyester resin"
+},
+{
+  question: "Silica is classified as a.",
+  options: [
+    "Non-reinforcing filler",
+    "Reinforcing filler",
+    "Semi-reinforcing filler",
+    "Cheapening filler"
+  ],
+  answer: "Semi-reinforcing filler"
+},
+{
+  question: "Optimum cure time from rheograph is generally.",
+  options: ["T-2", "T-10", "T-100", "T-90"],
+  answer: "T-90"
+},
+{
+  question: "As particle size of carbon black increases, hardness.",
+  options: ["Increases", "Decreases", "No effect", "None"],
+  answer: "Decreases"
+},
+{
+  question: "Blowing agent used in microcellular rubber.",
+  options: ["DPG", "TMTD", "DNPT", "CBS"],
+  answer: "DNPT"
+},
+{
+  question: "Which is an ultra accelerator?",
+  options: ["MBT", "MBTS", "TMTD", "ZDC"],
+  answer: "ZDC"
+},
+{
+  question: "Flame resistant synthetic rubber is.",
+  options: [
+    "SBR",
+    "PBD",
+    "Fluorocarbon rubber",
+    "EPR"
+  ],
+  answer: "Fluorocarbon rubber"
+},
+{
+  question: "Chaffer strips provide reinforcement to.",
+  options: ["Side wall", "Tread", "Bead area", "Carcass fabric"],
+  answer: "Bead area"
+},
+{
+  question: "HAF carbon black is produced by.",
+  options: [
+    "Channel process",
+    "Thermal process",
+    "Furnace process",
+    "Lamp black process"
+  ],
+  answer: "Furnace process"
+},
+{
+  question: "Scorch time is.",
+  options: [
+    "Time required for crosslinking",
+    "Total compounding time",
+    "Time for full vulcanization",
+    "Safety time before vulcanization starts"
+  ],
+  answer: "Safety time before vulcanization starts"
+},
+{
+  question: "Which is not a reinforcing filler?",
+  options: [
+    "Aluminium silicate",
+    "Silica",
+    "Whiting",
+    "Carbon black"
+  ],
+  answer: "Whiting"
+},
+{
+  question: "Reclaimed rubber is produced from.",
+  options: [
+    "Rubber compound",
+    "Pre-vulcanized latex",
+    "Ground vulcanized rubber",
+    "Creep rubber"
+  ],
+  answer: "Ground vulcanized rubber"
+},
+{
+  question: "In radial tyre carcass, cords run at.",
+  options: [
+    "45°",
+    "90°",
+    "60°",
+    "180°"
+  ],
+  answer: "90°"
+},
+{
+  question: "Speed ratio of lab size mixing mill rollers is.",
+  options: ["1:1.9", "1:2", "1:1.2", "1:1.3"],
+  answer: "1:1.2"
+},
+{
+  question: "Hardness of vulcanized rubber is measured by.",
+  options: [
+    "Tensile tester",
+    "Dunlop tripsometer",
+    "Durometer",
+    "Rheometer"
+  ],
+  answer: "Durometer"
+},
+{
+  question: "Rayon fibres are produced from.",
+  options: ["Ethylene glycol", "Lignin", "Polyamides", "Cellulose"],
+  answer: "Cellulose"
+},
+{
+  question: "Visco-elastic behaviour of polymers is.",
+  options: [
+    "Liquid-like",
+    "Combination of solid and liquid",
+    "Combination of gas and solid",
+    "Solid only"
+  ],
+  answer: "Combination of solid and liquid"
+}
+
+];
+
+
+
+const quizForm = document.getElementById("quizForm");
+
+questions.forEach((q, index) => {
+  const div = document.createElement("div");
+  div.className = "question";
+
+  let html = `<p>${index + 1}. ${q.question}</p>`;
+q.options.forEach(option => {
+  html += `
+    <label style="display:block; margin:5px 0;">
+      <input type="radio" 
+             name="q${index}" 
+             value="${option}"
+             onchange="showAnswer(${index}, this.value, '${q.answer.replace(/'/g, "\\'")}')">
+      ${option}
+    </label>
+  `;
+});
+
+html += `<div id="answer${index}" style="font-weight:bold; margin-top:5px;"></div>`;
+
+
+  div.innerHTML = html;
+  quizForm.appendChild(div);
+});
+
+function submitQuiz() {
+  let score = 0;
+  let reviewHTML = "";
+
+  questions.forEach((q, index) => {
+    const selected = document.querySelector(`input[name="q${index}"]:checked`);
+    const userAnswer = selected ? selected.value : "Not Answered";
+
+    if (userAnswer === q.answer) {
+      score++;check 
+    }
+
+    reviewHTML += `
+      <div class="question">
+        <p>${index + 1}. ${q.question}</p>
+        <p>Your Answer: <span class="${userAnswer === q.answer ? 'correct' : 'wrong'}">${userAnswer}</span></p>
+        <p>Correct Answer: <span class="correct">${q.answer}</span></p>
+      </div>
+    `;
+  });
+
+  document.getElementById("result").innerHTML =
+    `You scored ${score} out of ${questions.length} (${((score/questions.length)*100).toFixed(2)}%)`;
+
+const studentName = localStorage.getItem("studentName");
+
+database.ref("leaderboard").push({
+    name: studentName,
+    score: score
+});
+  document.getElementById("review").innerHTML = reviewHTML;
+}
+
+
+function showAnswer(index, selected, correctAnswer) {
+  const answerBox = document.getElementById("answer" + index);
+
+  if (selected === correctAnswer) {
+    answerBox.innerHTML = "✔ Correct";
+    answerBox.style.color = "green";
+  } else {
+    answerBox.innerHTML = "✘ Wrong | Correct Answer: " + correctAnswer;
+    answerBox.style.color = "red";
+  }
+}
+</script>
+
+</body>
+</html>
