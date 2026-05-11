@@ -1,72 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>POT308 Mock Test Part 1</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f3f4f6;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    h1, h2 {
-      text-align: center;
-    }
-    .question {
-      margin-bottom: 25px;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-    }
-    .question p {
-      font-weight: bold;
-    }
-    label {
-      display: block;
-      margin: 8px 0;
-      cursor: pointer;
-    }
-    button {
-      display: block;
-      width: 100%;
-      padding: 15px;
-      font-size: 18px;
-      font-weight: bold;
-      background: black;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      margin-top: 20px;
-    }
-    button:hover {
-      background: #333;
-    }
-    .result {
-      text-align: center;
-      font-size: 22px;
-      margin-top: 20px;
-    }
-    .correct {
-      color: green;
-      font-weight: bold;
-    }
-    .wrong {
-      color: red;
-      font-weight: bold;
-    }
+   body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #f2f2f2;
+    margin: 0;
+    padding: 10px;
+}
+
+.container {
+    width: 95%;
+    max-width: 900px;
+    margin: auto;
+    margin-top: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-sizing: border-box;
+}
+
+input[type="text"] {
+    padding: 12px;
+    width: 90%;
+    max-width: 400px;
+    font-size: 18px;
+}
+
+button {
+    width: 90%;
+    max-width: 400px;
+    padding: 15px;
+    font-size: 18px;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 10px;
+}
+
+h1 {
+    font-size: 32px;
+}
+
+h2 {
+    font-size: 24px;
+}
+
+@media (max-width: 600px) {
+    h1 { font-size: 26px; }
+    h2 { font-size: 20px; }
+    button { font-size: 16px; }
+}
   </style>
 </head>
 <body>

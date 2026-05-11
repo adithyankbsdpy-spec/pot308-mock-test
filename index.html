@@ -1,38 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <title>POT308 Mock Test Portal</title>
     
     <style>
         body {
-            font-family: Arial;
-            text-align: center;
-            background: #f2f2f2;
-        }
-        .container {
-            max-width: 700px;
-            margin: auto;
-            margin-top: 50px;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-        }
-        input {
-            padding: 10px;
-            width: 60%;
-            font-size: 18px;
-        }
-        button {
-            padding: 12px 25px;
-            font-size: 18px;
-            background: black;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 8px;
-        }
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+    margin: 0;
+    padding: 10px;
+}
+
+.container {
+    width: 95%;
+    max-width: 1000px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-sizing: border-box;
+}
+
+.question {
+    text-align: left;
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+label {
+    display: block;
+    margin: 8px 0;
+    font-size: 18px;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 10px;
+}
+
+@media (max-width: 600px) {
+    h1 { font-size: 26px; }
+    h2 { font-size: 20px; }
+    label { font-size: 16px; }
+}
     </style>
 </head>
 <body>
